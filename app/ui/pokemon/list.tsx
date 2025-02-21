@@ -28,27 +28,26 @@ interface PokemonListProps {
 function PokemonListContent({ initialPokemon }: PokemonListProps) {
   const { ref, inView } = useInView();
 
-  const { data, fetchNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: ["pokemon"],
-      queryFn: async ({ pageParam }) => {
-        return pokemonApi.getPokemonListWithDetails(pageParam);
-      },
-      initialData: {
-        pages: [initialPokemon],
-        pageParams: [0],
-      },
-      initialPageParam: 0,
-      getNextPageParam: (lastPage, allPages) => {
-        return allPages.length * 50;
-      },
-    });
+  const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ["pokemon"],
+    queryFn: async ({ pageParam }) => {
+      return pokemonApi.getPokemonListWithDetails(pageParam);
+    },
+    initialData: {
+      pages: [initialPokemon],
+      pageParams: [0],
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return allPages.length * 50;
+    },
+  });
 
   useEffect(() => {
     if (inView && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [inView, isFetchingNextPage, fetchNextPage]);
+  }, [inView]);
 
   const allPokemon = data?.pages.flat() ?? [];
 
