@@ -8,7 +8,6 @@ import {
 
 import { Pokemon } from "@/app/lib/pokemon-definitions";
 import { PokemonTable } from "@/app/ui/pokemon/table";
-import { PokemonTableSkeleton } from "./skeletons";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { pokemonApi } from "@/app/lib/pokemon-data";
 import { useEffect } from "react";
@@ -29,7 +28,7 @@ interface PokemonListProps {
 function PokemonListContent({ initialPokemon }: PokemonListProps) {
   const { ref, inView } = useInView();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["pokemon"],
       queryFn: async ({ pageParam }) => {
@@ -49,7 +48,7 @@ function PokemonListContent({ initialPokemon }: PokemonListProps) {
     if (inView && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [inView]);
+  }, [inView, isFetchingNextPage, fetchNextPage]);
 
   const allPokemon = data?.pages.flat() ?? [];
 
@@ -57,7 +56,11 @@ function PokemonListContent({ initialPokemon }: PokemonListProps) {
     <div>
       <PokemonTable pokemon={allPokemon} />
 
-      <div ref={ref}>{isFetchingNextPage && <PokemonTableSkeleton />}</div>
+      <div ref={ref} className="flex justify-center p-4">
+        {isFetchingNextPage && (
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+        )}
+      </div>
     </div>
   );
 }

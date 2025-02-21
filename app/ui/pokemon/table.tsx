@@ -1,4 +1,5 @@
 import { Pokemon } from "@/app/lib/pokemon-definitions";
+import Image from "next/image";
 
 export function PokemonTable({ pokemon }: { pokemon: Pokemon[] }) {
   return (
@@ -11,11 +12,15 @@ export function PokemonTable({ pokemon }: { pokemon: Pokemon[] }) {
                 <div className="flex items-center justify-between border-b pb-4">
                   <div className="flex items-center">
                     {p.sprites.front_default && (
-                      <img
-                        src={p.sprites.front_default}
-                        alt={p.name}
-                        className="h-12 w-12"
-                      />
+                      <div className="relative h-12 w-12">
+                        <Image
+                          src={p.sprites.front_default}
+                          alt={p.name}
+                          fill
+                          sizes="48px"
+                          className="object-contain"
+                        />
+                      </div>
                     )}
                     <p className="ml-4 text-sm capitalize">{p.name}</p>
                   </div>
@@ -64,11 +69,15 @@ export function PokemonTable({ pokemon }: { pokemon: Pokemon[] }) {
                   </td>
                   <td className="whitespace-nowrap px-4 py-4">
                     {p.sprites.front_default && (
-                      <img
-                        src={p.sprites.front_default}
-                        alt={p.name}
-                        className="h-12 w-12"
-                      />
+                      <div className="relative h-12 w-12">
+                        <Image
+                          src={p.sprites.front_default}
+                          alt={p.name}
+                          fill
+                          sizes="48px"
+                          className="object-contain"
+                        />
+                      </div>
                     )}
                   </td>
                   <td className="whitespace-nowrap px-4 py-4 capitalize">
