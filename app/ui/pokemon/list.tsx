@@ -1,37 +1,22 @@
 "use client";
 
-import {
-  QueryClient,
-  QueryClientProvider,
-  useInfiniteQuery,
-} from "@tanstack/react-query";
+import { infiniteQueryOptions, useInfiniteQuery } from "@tanstack/react-query";
 
+import { pokemonApi } from "@/app/lib/pokemon-data";
 import { Pokemon } from "@/app/lib/pokemon-definitions";
 import { PokemonTable } from "@/app/ui/pokemon/table";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { pokemonApi } from "@/app/lib/pokemon-data";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000,
-    },
-  },
-});
-
-interface PokemonListProps {
-  initialPokemon: Pokemon[];
-}
-
-function PokemonListContent({ initialPokemon }: PokemonListProps) {
-  const { ref, inView } = useInView();
-
-  const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
+const pokemonQueryOptions = (initialPokemon: Pokemon[]) =>
+  infiniteQueryOptions({
     queryKey: ["pokemon"],
     queryFn: async ({ pageParam }) => {
-      return pokemonApi.getPokemonListWithDetails(pageParam);
+      const list = await pokemonApi.getPokemonList(pageParam);
+      const pokemonPromises = list.results.map(pokemon =>
+        pokemonApi.getPokemonDetails(pokemon.name)
+      );
+      return Promise.all(pokemonPromises);
     },
     initialData: {
       pages: [initialPokemon],
@@ -42,6 +27,17 @@ function PokemonListContent({ initialPokemon }: PokemonListProps) {
       return allPages.length * 50;
     },
   });
+
+interface PokemonListProps {
+  initialPokemon: Pokemon[];
+}
+
+function PokemonListContent({ initialPokemon }: PokemonListProps) {
+  const { ref, inView } = useInView();
+
+  const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery(
+    pokemonQueryOptions(initialPokemon)
+  );
 
   useEffect(() => {
     if (inView && !isFetchingNextPage) {
@@ -65,10 +61,5 @@ function PokemonListContent({ initialPokemon }: PokemonListProps) {
 }
 
 export default function PokemonList({ initialPokemon }: PokemonListProps) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <PokemonListContent initialPokemon={initialPokemon} />
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  );
+  return <PokemonListContent initialPokemon={initialPokemon} />;
 }
