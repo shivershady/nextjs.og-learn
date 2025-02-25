@@ -7,6 +7,7 @@ import { Pokemon } from "@/app/lib/pokemon-definitions";
 import { PokemonTable } from "@/app/ui/pokemon/table";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import { PokemonTableSkeleton } from "./skeletons";
 
 const pokemonQueryOptions = (initialPokemon: Pokemon[]) =>
   infiniteQueryOptions({
@@ -50,12 +51,7 @@ function PokemonListContent({ initialPokemon }: PokemonListProps) {
   return (
     <div>
       <PokemonTable pokemon={allPokemon} />
-
-      <div ref={ref} className="flex justify-center p-4">
-        {isFetchingNextPage && (
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-        )}
-      </div>
+      <div ref={ref}>{isFetchingNextPage && <PokemonTableSkeleton />}</div>
     </div>
   );
 }

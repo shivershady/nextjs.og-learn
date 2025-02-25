@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import SideNav from "@/app/ui/dashboard/sidenav";
 import QueryProvider from "@/app/providers/query-provider";
+import HydrationProvider from "@/app/providers/hydration-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -21,7 +22,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
       <div className="flex-grow p-6 md:overflow-y-auto md:p-12">
         <QueryProvider>
-          {children}
+          <HydrationProvider>
+            {children}
+          </HydrationProvider>
         </QueryProvider>
       </div>
     </div>
